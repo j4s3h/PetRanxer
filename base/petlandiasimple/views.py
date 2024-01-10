@@ -4,7 +4,16 @@ from .serializers import CreateMedicalHistorySerializer, DisplayMedicalHistorySe
 from .models import MedicalHistory
 from petlandiasimple.utils.generate_uid import generate_uuid
 from petlandiasimple.utils.constant import *
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.http import Http404
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
+from django.db.models import Q
+from rest_framework.exceptions import PermissionDenied
+
 class CreateMedicalRecord(APIView):
     
     def post(self, request):
@@ -35,6 +44,9 @@ class CreateMedicalRecord(APIView):
         return Response({"message": "Error!", "status": status, "errors": errors})
 
 class DisplayMedicalRecordsViews(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    authentication_classes = [JWTAuthentication]
     def get(self, request): 
         medical_history = MedicalHistory.objects.all().values(
             'id',
@@ -63,8 +75,8 @@ class DisplayMedicalRecordsViews(APIView):
             'diet',
             'weight',
             'initial_temp',
-            'is_HR',
-            'is_RR',
+            'heart_rate',
+            'respitory_rate',
             'abnormal_findings',
             'is_cbc',
             'is_skin_scrape',
@@ -139,4 +151,31 @@ class DeleteMedicalRecords(APIView):
         status = no_content        
         return Response ({"Message": message, "data": data, "status": status, "errors": errors })
     
+class LoginView(APIView):
     
+    permission_classes = [AllowAny]
+
+    def post(self, request, format=None):
+        username= request.data['username']
+        password = request.data['password']
+
+
+        user = User.objects.filter(Q(username=username)).first()
+
+        if user is None:
+            raise AuthenticationFailed('No user found with the given email/username.')
+
+        if not user.check_password(password):
+            raise AuthenticationFailed('Incorrect password.')
+
+        serializer = TokenObtainPairSerializer(data=request.data)
+        if serializer.is_valid():
+            refresh_token = RefreshToken.for_user(serializer.user)
+            data = {
+                'access_token': str(serializer.validated_data['access']),
+                'refresh_token': str(refresh_token)
+            }
+            status = ok
+            return Response(data, status=status)
+        status = unauthorized
+        return Response(serializer.errors, status=status)
