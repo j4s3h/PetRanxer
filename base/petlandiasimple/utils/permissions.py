@@ -1,15 +1,16 @@
-
+from rest_framework import permissions
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework import status
+from rest_framework.views import exception_handler
 
-class CustomIsAuthenticated(permissions.IsAuthenticated):
-    message = "Authentication is required to access this resource."
-    code = status.HTTP_401_UNAUTHORIZED
 
-    def permission_denied(self, request, message=None, code=None):
+def handle_exception(self, exc):
+    if isinstance(exc, PermissionDenied):
         response_data = {
-            "message": "Oops, authentication failed.",  # Customize this message
-            "status": self.code,
-            "detail": self.message
+            "message": "Authentication is required to access this resource.",
+            "status": status.HTTP_401_UNAUTHORIZED
         }
-        return Response(response_data, status=self.code)
+        return Response(response_data, status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return super().handle_exception(exc)
