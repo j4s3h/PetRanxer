@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-tmhu*r-3=8c#_0h3g+*_&fe1$=%8=ymw7-xyr3u%xm%oo6z=qo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['j4seh.pythonanywhere.com', 'localhost']
 
 
 # Application definition
@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'petlandiasimple'
+    'petlandiasimple',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'base.urls'
@@ -132,3 +134,9 @@ REST_FRAMEWORK = {
         # ... other authentication classes ...
     ],
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:9000", "https://localhost:9000"  # Add the domain of your frontend application
+    ,
+    # Add other origins as needed
+]

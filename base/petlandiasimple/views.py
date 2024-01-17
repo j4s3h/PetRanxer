@@ -149,13 +149,16 @@ class DeleteMedicalRecords(APIView):
         medical_record.delete()
         message = 'Successfully Deleted'
         status = no_content        
-        return Response ({"Message": message, "data": data, "status": status, "errors": errors })
+        return Response ({"message": message, "data": data, "status": status, "errors": errors })
     
 class LoginView(APIView):
     
     permission_classes = [AllowAny]
-
+        
     def post(self, request, format=None):
+        errors = {}
+        data = {}
+        status = None
         username= request.data['username']
         password = request.data['password']
 
@@ -175,7 +178,8 @@ class LoginView(APIView):
                 'access_token': str(serializer.validated_data['access']),
                 'refresh_token': str(refresh_token)
             }
+            message =  'Successfully Login'
             status = ok
-            return Response(data, status=status)
+            return Response ({"message": message, "data": data, "status": status, "errors": errors })
         status = unauthorized
         return Response(serializer.errors, status=status)
