@@ -24,6 +24,6 @@ urlpatterns = [
     path ('v1p0/display_medical_history/' , DisplayMedicalRecordsViews.as_view(), name= 'get_medical_history'),
     path ('v1p0/delete_medical_history/<pk>/', DeleteMedicalRecords.as_view(), name = 'delete_medical_history'),
     path ('v1p0/edit_medical_record/<pk>/',EditMedicalRecords.as_view(), name = 'edit_medical_record'),
-    path ('v1p0/display_medical_record/<pk>/',DisplayMedicalRecordViewsIndiv.as_view(), name = 'edit_medical_record'),
+    path ('v1p0/display_medical_record/<pk>/',DisplayMedicalRecordViewsIndiv.as_view(), name = 'display_medical_record'),
     path ('v1p0/login/',LoginView.as_view(), name = 'login')
 ]

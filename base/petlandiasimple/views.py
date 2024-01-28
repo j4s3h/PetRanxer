@@ -13,7 +13,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
 from django.db.models import Q
 from rest_framework.exceptions import PermissionDenied
-
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 class CreateMedicalRecord(APIView):
     permission_classes = [IsAuthenticated]
     
@@ -101,6 +101,7 @@ class DisplayMedicalRecordsViews(APIView):
 
 class DisplayMedicalRecordViewsIndiv(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     def get_medical_record(self, pk):
         try: 
             return MedicalHistory.objects.get(pk=pk)
@@ -117,6 +118,8 @@ class DisplayMedicalRecordViewsIndiv(APIView):
         return Response({"message": message, "data": data, "status": status, "errors": errors})
 class EditMedicalRecords(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    
     def get_medical_record(self, pk):
         try: 
             return MedicalHistory.objects.get(pk=pk)
@@ -134,17 +137,22 @@ class EditMedicalRecords(APIView):
             errors = None
             message = 'Edited Successfully'
             return Response({"message": message, "data": data, "status": status, "errors": errors})
+        message = {}
+        data = {}
         status = bad_request
         errors = serializer.errors
         return Response({"message": message, "data": data, "status": status, "errors": errors})
 
 class DeleteMedicalRecords(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     def get_medical_record(self, pk):
         try: 
             return MedicalHistory.objects.get(pk=pk)
         except MedicalHistory.DoesNotExist:
             raise Http404
+
     def delete(self, request, pk):
         errors = {}
         data = {}
@@ -153,9 +161,9 @@ class DeleteMedicalRecords(APIView):
         medical_record.delete()
         message = 'Successfully Deleted'
         status = no_content        
-        return Response ({"message": message, "data": data, "status": status, "errors": errors })
-    
+        return Response({"message": message, "data": data, "status": status, "errors": errors})
 class LoginView(APIView):
+    
     
     permission_classes = [AllowAny]
         
