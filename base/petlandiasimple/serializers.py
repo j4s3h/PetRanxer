@@ -1,6 +1,20 @@
 from rest_framework import serializers
+import datetime
 from .models import MedicalHistory
+class CustomDateFormatField(serializers.DateField):
+    def to_internal_value(self, value):
+        try:
+            # Parse the input date in 'YYYY/MM/DD' format
+            date_obj = datetime.datetime.strptime(value, '%Y/%m/%d').date()
+            return date_obj
+        except ValueError:
+            raise serializers.ValidationError("Invalid date format. Please use 'YYYY/MM/DD'.")
 class CreateMedicalHistorySerializer(serializers.ModelSerializer):
+    pets_birthday = CustomDateFormatField()
+    last_vaccination_date = CustomDateFormatField()
+    last_deworming_date = CustomDateFormatField()
+    date_hospitalized = CustomDateFormatField ()
+    followup_checkup_date = CustomDateFormatField()
     class Meta:
         model = MedicalHistory
         fields = [
