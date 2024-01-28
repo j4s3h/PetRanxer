@@ -15,6 +15,7 @@ from django.db.models import Q
 from rest_framework.exceptions import PermissionDenied
 
 class CreateMedicalRecord(APIView):
+    permission_classes = [IsAuthenticated]
     
     def post(self, request):
         serializer = CreateMedicalHistorySerializer(data=request.data)
@@ -99,6 +100,7 @@ class DisplayMedicalRecordsViews(APIView):
     
 
 class DisplayMedicalRecordViewsIndiv(APIView):
+    permission_classes = [IsAuthenticated]
     def get_medical_record(self, pk):
         try: 
             return MedicalHistory.objects.get(pk=pk)
@@ -114,6 +116,7 @@ class DisplayMedicalRecordViewsIndiv(APIView):
         errors = {}
         return Response({"message": message, "data": data, "status": status, "errors": errors})
 class EditMedicalRecords(APIView):
+    permission_classes = [IsAuthenticated]
     def get_medical_record(self, pk):
         try: 
             return MedicalHistory.objects.get(pk=pk)
@@ -136,6 +139,7 @@ class EditMedicalRecords(APIView):
         return Response({"message": message, "data": data, "status": status, "errors": errors})
 
 class DeleteMedicalRecords(APIView):
+    permission_classes = [IsAuthenticated]
     def get_medical_record(self, pk):
         try: 
             return MedicalHistory.objects.get(pk=pk)
