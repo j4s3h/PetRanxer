@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import CreateMedicalHistorySerializer, DisplayMedicalHistorySerializer
+from .serializers import CreateMedicalHistorySerializer, DisplayMedicalHistorySerializer, ViewProfileSerializer
 from .models import MedicalHistory
 from petlandiasimple.utils.generate_uid import generate_uuid
 from petlandiasimple.utils.constant import *
@@ -196,3 +196,27 @@ class LoginView(APIView):
             return Response ({"message": message, "data": data, "status": status, "errors": errors })
         status = unauthorized
         return Response(serializer.errors, status=status)
+
+
+
+
+class ViewProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    def get(self, request):
+        user = request.user
+        is_admin = user.is_staff
+        serializer = ViewProfileSerializer(user)
+        serialized_data = serializer.data
+        message = 'Successful'
+        serialized_data['role'] = "owner" if is_admin else "staff"
+        status_code = ok
+        errors = {}
+        
+        return Response({
+            "message": message,
+            "data": serialized_data,
+            "status": status_code,
+            "errors": errors,
+             
+        })
