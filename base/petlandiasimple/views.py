@@ -173,7 +173,7 @@ class LoginView(APIView):
     def post(self, request, format=None):
         errors = {}
         data = {}
-        status = None
+        status = None 
         username = request.data.get('username')
         password = request.data.get('password')
 
