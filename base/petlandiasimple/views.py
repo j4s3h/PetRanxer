@@ -16,6 +16,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 class CreateMedicalRecord(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     
     def post(self, request):
         serializer = CreateMedicalHistorySerializer(data=request.data)
@@ -42,7 +43,7 @@ class CreateMedicalRecord(APIView):
 
         errors = serializer.errors
         status = bad_request
-        return Response({"message": "Error!", "status": status, "errors": errors})
+        return Response({"message": "Error!",  "errors": errors}, status)
 
 class DisplayMedicalRecordsViews(APIView):
     permission_classes = [IsAuthenticated]
