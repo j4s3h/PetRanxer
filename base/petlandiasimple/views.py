@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import CreateMedicalHistorySerializer, DisplayMedicalHistorySerializer, ViewProfileSerializer
-from .models import MedicalHistory
+from .models import MedicalHistory, CustomUser
 from petlandiasimple.utils.generate_uid import generate_uuid
 from petlandiasimple.utils.constant import *
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -14,6 +14,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
 from django.db.models import Q
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from django.contrib.auth import get_user_model
 class CreateMedicalRecord(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -163,20 +164,28 @@ class DeleteMedicalRecords(APIView):
         message = 'Successfully Deleted'
         status = no_content        
         return Response({"message": message, "data": data, "status": status, "errors": errors})
+
+CustomUser = get_user_model()
+
 class LoginView(APIView):
-    
-    
     permission_classes = [AllowAny]
-        
+
     def post(self, request, format=None):
         errors = {}
         data = {}
         status = None
-        username= request.data['username']
-        password = request.data['password']
+        username = request.data.get('username')
+        password = request.data.get('password')
 
+        if not username:
+            errors['username'] = 'Username is required.'
+        if not password:
+            errors['password'] = 'Password is required.'
 
-        user = User.objects.filter(Q(username=username)).first()
+        if errors:
+            return Response({'errors': errors}, status=400)
+
+        user = CustomUser.objects.filter(Q(username=username)).first()
 
         if user is None:
             raise AuthenticationFailed('No user found with the given email/username.')
@@ -185,22 +194,30 @@ class LoginView(APIView):
             raise AuthenticationFailed('Incorrect password.')
 
         serializer = TokenObtainPairSerializer(data=request.data)
-        if serializer.is_valid():
-            refresh_token = RefreshToken.for_user(serializer.user)
-            data = {
-                'access_token': str(serializer.validated_data['access']),
-                'refresh_token': str(refresh_token)
-            }
-            message =  'Successfully Login'
-            status = ok
-            return Response ({"message": message, "data": data, "status": status, "errors": errors })
-        status = unauthorized
-        return Response(serializer.errors, status=status)
+        serializer.is_valid(raise_exception=True)
+        
+        refresh_token = RefreshToken.for_user(user)
+
+        data = {
+            'access_token': str(serializer.validated_data['access']),
+            'refresh_token': str(refresh_token)
+        }
+
+        message = 'Successfully logged in'
+        status = ok  
+
+        return Response({
+            'message': message,
+            'data': data,
+            'status': status,
+            'errors': errors
+        },status)
 
 
 
 
 class ViewProfileView(APIView):
+    
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     def get(self, request):
