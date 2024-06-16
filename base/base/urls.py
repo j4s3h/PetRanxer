@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from petlandiasimple.views import CreateMedicalRecord, DisplayMedicalRecordViewsIndiv, EditMedicalRecords, DeleteMedicalRecords, DisplayMedicalRecordsViews, LoginView
+from petlandiasimple.views import CreateMedicalRecord, DisplayMedicalRecordViewsIndiv, EditMedicalRecords, DeleteMedicalRecords, DisplayMedicalRecordsViews, LoginView, ViewProfileView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +25,6 @@ urlpatterns = [
     path ('v1p0/delete_medical_history/<pk>/', DeleteMedicalRecords.as_view(), name = 'delete_medical_history'),
     path ('v1p0/edit_medical_record/<pk>/',EditMedicalRecords.as_view(), name = 'edit_medical_record'),
     path ('v1p0/display_medical_record/<pk>/',DisplayMedicalRecordViewsIndiv.as_view(), name = 'display_medical_record'),
-    path ('v1p0/login/',LoginView.as_view(), name = 'login')
+    path ('v1p0/login/',LoginView.as_view(), name = 'login'),
+    path('v1p0/view/profile/', ViewProfileView.as_view(), name = 'profile_view')
 ]

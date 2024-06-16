@@ -2,7 +2,6 @@ venv/
 media/
 static/
 *.py[c]
-tara_libot_web_admin/migrations/*.py
-tara_libot_web_client/migrations/*.py
 !*/migrations/init.py
 db.sqlite3
+base/petlandiasimple/migrations/*.py

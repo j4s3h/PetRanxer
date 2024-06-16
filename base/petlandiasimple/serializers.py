@@ -1,6 +1,6 @@
 from rest_framework import serializers
 import datetime
-from .models import MedicalHistory
+from .models import MedicalHistory, CustomUser
 class CustomDateFormatField(serializers.DateField):
     def to_internal_value(self, value):
         try:
@@ -66,4 +66,8 @@ class DisplayMedicalHistorySerializer(serializers.ModelSerializer):
         model = MedicalHistory
         fields = '__all__'
         
-        
+
+class ViewProfileSerializer(serializers.ModelSerializer):
+     class Meta:
+        model = CustomUser
+        fields = [ 'name', 'username', 'email']
