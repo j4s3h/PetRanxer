@@ -10,11 +10,6 @@ class CustomDateFormatField(serializers.DateField):
         except ValueError:
             raise serializers.ValidationError("Invalid date format. Please use 'YYYY/MM/DD'.")
 class CreateMedicalHistorySerializer(serializers.ModelSerializer):
-    pets_birthday = CustomDateFormatField()
-    last_vaccination_date = CustomDateFormatField()
-    last_deworming_date = CustomDateFormatField()
-    date_hospitalized = CustomDateFormatField ()
-    followup_checkup_date = CustomDateFormatField()
     class Meta:
         model = MedicalHistory
         fields = [
